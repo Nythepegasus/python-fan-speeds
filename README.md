@@ -4,7 +4,7 @@ This is a package that I am putting together to help control my Mac's fans on Ub
 
 #### Todo List
 * Command line options
-  * `Debug` option.
+  * ~`Debug` option.~
   * Config file.
     * The config file would allow for different temperature ranges.
     * The config file would allow for different fan speeds for these different temperature ranges.

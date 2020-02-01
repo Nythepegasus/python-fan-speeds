@@ -2,7 +2,28 @@ import glob, re, os, sys, subprocess
 from decimal import Decimal
 
 # Script Option # TODO: Set this as a cli option
-DEBUG = True
+DEBUG = False
+config = ""
+if len(sys.argv) == 1:
+    pass
+else:
+    if "h" in sys.argv[1]:
+        print("You have to put options together (ex. -dc).\n\n-d\t\t\tSet debug flag\n-c\t\t\tSet config file (ex. tem.py -c [configfile])\n-h\t\t\tThis help menu")
+        exit()
+    if "d" in sys.argv[1]:
+        DEBUG = True
+    if "c" in sys.argv[1] and os.getuid() == 0:
+        try:
+            config = sys.argv[2]
+        except IndexError:
+            print("Error: No config file provided.")
+    elif "c" in sys.argv[1] and os.getuid() != 0:
+        print("Error: Must be root to use config files.")
+
+# Gotta figure out config file stuff
+if config != "":
+    print("Config stuffs is still getting fixed up, hold tight for now.")
+
 
 # Config Stuffs
 path = "/sys/devices/platform/applesmc.768/"
