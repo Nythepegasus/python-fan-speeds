@@ -1,7 +1,7 @@
 import glob, re, os, sys, subprocess
 from decimal import Decimal
 
-# Script Option # TODO: Set this as a cli option
+# Script Option
 DEBUG = False
 config = ""
 if len(sys.argv) == 1:
