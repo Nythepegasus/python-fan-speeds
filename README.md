@@ -9,6 +9,6 @@ This is a package that I am putting together to help control my Mac's fans on Ub
     * The config file would allow for different temperature ranges.
     * The config file would allow for different fan speeds for these different temperature ranges.
     * **(This shit is going to take so long)**
-* Separating the script into root and normal user sections
-  * The user script will have sensor readings and fan speed.
-  * The root script would add control to the fan.
+* ~Separating the script into root and normal user sections~
+  * ~The user script will have sensor readings and fan speed.~
+  * ~The root script would add control to the fan.~
