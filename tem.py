@@ -62,6 +62,7 @@ if DEBUG:
     print(f"Current UID: {os.getuid()}\n")
 
 def user_main():
+    """All of these things can be ran as any user, because you can read from every file, the tricky bit is being able to write to any file."""
     with open(f"{path}fan1_input", "r") as f:
         fanspeed = int(f.read().strip("\n"))
         print(f"Current fan speed: {fanspeed} rpm\n")
@@ -73,13 +74,14 @@ def user_main():
                 temps.update({label : temp})
             else:
                 screwy.update({label : temp})
-    print(f"\nThe average overall temp: {round(sum(temps.values())/len(temps), 2)}°C\n")
     temp = temps['TC1C']
-    print(f"CPU Temp: {temp}")
-    print("Screwy labels:\n"+"\n".join(f"{i}: {Decimal(screwy[i]).quantize(Decimal(10) ** -2)}°C" for i in screwy))
+    if DEBUG:
+        print(f"DEBUG INFO:\nThe average overall temp: {round(sum(temps.values())/len(temps), 2)}°C\nCPU Temp: {temp}")
+        print("\nScrewy labels:\n"+"\n".join(f"{i}: {Decimal(screwy[i]).quantize(Decimal(10) ** -2)}°C" for i in screwy))
     return temp
 
 def root_main():
+    """This runs the fan control section of this script. You must be root to write to the necessary files for fan control."""
     temp = user_main()
     with open(f"{path}fan1_manual", "r") as f:
         manual = f.read().strip("\n")
@@ -95,6 +97,21 @@ def root_main():
     else:
         if DEBUG:
             print("All good!")
+
+    """
+    I got this insane idea. What if I ran this last part in a separate script? Like, a generatable script.
+    Hear me out. The data would be like:
+    Start range,End range,rpm
+
+    This would allow for generation of script:
+    elif start range <= temp <= end range:
+        with open(f"{path}fan1_output", "w") as f:
+            f.write(rpm)
+    With each elif being filled out with the config stuffs. The config stuff could be put into a csv file.
+    The only issue would be that the first line would have to be only 2 values. Start range and rpm, because the first `if`
+    is generated a little differently. Man, why do I only get these insane ideas super late into the night? I'm gonna be dreaming
+    up a solution to solve this problem, lol..
+    """
     if temp <= 55.0:
         with open(f"{path}fan1_output", "w") as f:
             f.write("1300")
