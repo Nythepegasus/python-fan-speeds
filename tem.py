@@ -1,4 +1,5 @@
 import glob, re, os, sys, subprocess
+from time import sleep
 from decimal import Decimal
 
 # Script Option
@@ -23,7 +24,6 @@ else:
 # Gotta figure out config file stuff
 if config != "":
     print("Config stuffs is still getting fixed up, hold tight for now.")
-
 
 # Config Stuffs
 path = "/sys/devices/platform/applesmc.768/"
@@ -130,6 +130,12 @@ def root_main():
     return 0
 
 if os.getuid() == 0:
-    root_main()
+    while True:
+        root_main()
+        sleep(1)
+        os.system("clear")
 else:
-    user_main()
+    while True:
+        user_main()
+        sleep(1)
+        os.system("clear")
