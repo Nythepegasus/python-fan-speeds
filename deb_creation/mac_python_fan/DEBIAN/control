@@ -1,0 +1,12 @@
+Package: mac-python-fan-control
+Package-Type: deb
+Version: 0.0.1
+Pre-Depends: python3 (>=3.6.5-3)
+Maintainer: nythepegasus nythepegasus84@gmail.com
+Description: Python scripts to help control Mac fan speeds
+Section: utils
+Priority: extra
+Architecture: all
+Origin: git@github.com:Nythepegasus/mac-python-fan-speeds.git
+Bugs: https://github.com/Nythepegasus/mac-python-fan-speeds/issues
+Homepage: https://github.com/Nythepegasus/mac-python-fan-speeds
