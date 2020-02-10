@@ -1,32 +1,10 @@
 #!/usr/bin/env python3
-import glob, re, os, sys, subprocess
+import glob, re, os, sys, subprocess, csv
 from time import sleep
 from decimal import Decimal
 
-# Script Option
-DEBUG = False
-config = ""
-if len(sys.argv) == 1:
-    pass
-else:
-    if "h" in sys.argv[1]:
-        print("You have to put options together (ex. -dc).\n\n-d\t\t\tSet debug flag\n-c\t\t\tSet config file (ex. tem.py -c [configfile])\n-h\t\t\tThis help menu")
-        exit()
-    if "d" in sys.argv[1]:
-        DEBUG = True
-    if "c" in sys.argv[1] and os.getuid() == 0:
-        try:
-            config = sys.argv[2]
-        except IndexError:
-            print("Error: No config file provided.")
-    elif "c" in sys.argv[1] and os.getuid() != 0:
-        print("Error: Must be root to use config files.")
-
-# Gotta figure out config file stuff
-if config != "":
-    print("Config stuffs is still getting fixed up, hold tight for now.")
-
 # Config Stuffs
+DEBUG = False
 path = "/sys/devices/platform/applesmc.768/"
 files = [re.search(r'\d+', filepath.strip(path)).group(0) for filepath in glob.iglob(f"{path}temp*_input") if re.search(r'\d+', filepath.strip(path))]
 temps, screwy = dict(), dict()
@@ -59,8 +37,28 @@ sensor_names = {
     "TH0C" : ""
 }
 
+# Debug UID
 if DEBUG:
     print(f"Current UID: {os.getuid()}\n")
+
+# Function defs
+def conf_read(conf="test.csv"):
+    gend = ""
+    with open(conf, "r") as csv_file:
+        first = csv_file.readline()
+        t, r = first[0], first[1]
+        woowee = f"if temp <= {t}:" + "\n\twith open(f\"{path}fan1_output\", \"w\") as f:\n\t\t" + f"f.write(\"{r}\")"
+        gend += woowee
+        csv_reader = csv.reader(csv_file)
+        for line in csv_reader:
+            t, r = line[0], line[1]
+            woowee = "\n" + f"elif temp <= {t}:" + "\n\twith open(f\"{path}fan1_output\", \"w\") as f:\n\t\t" + f"f.write(\"{r}\")"
+            gend += woowee
+    return gend
+
+def conf_write():
+    """Needs made, but configs can be used right now"""
+    pass
 
 def user_main():
     """All of these things can be ran as any user, because you can read from every file, the tricky bit is being able to write to any file."""
@@ -98,45 +96,37 @@ def root_main():
     else:
         if DEBUG:
             print("All good!")
-
-    """
-    I got this insane idea. What if I ran this last part in a separate script? Like, a generatable script.
-    Hear me out. The data would be like:
-    Start range,End range,rpm
-
-    This would allow for generation of script:
-    elif start range <= temp <= end range:
-        with open(f"{path}fan1_output", "w") as f:
-            f.write(rpm)
-    With each elif being filled out with the config stuffs. The config stuff could be put into a csv file.
-    The only issue would be that the first line would have to be only 2 values. Start range and rpm, because the first `if`
-    is generated a little differently. Man, why do I only get these insane ideas super late into the night? I'm gonna be dreaming
-    up a solution to solve this problem, lol..
-    """
-    if temp <= 55.0:
-        with open(f"{path}fan1_output", "w") as f:
-            f.write("1300")
-    elif 55.0 <= temp <= 60.0:
-        with open(f"{path}fan1_output", "w") as f:
-            f.write("2200")
-    elif 60.0 <= temp <= 75.0:
-        with open(f"{path}fan1_output", "w") as f:
-            f.write("4500")
-    elif 75.0 <= temp <= 95.0:
-        with open(f"{path}fan1_output", "w") as f:
-            f.write("5500")
-    elif 95.0 <= temp:
-        with open(f"{path}fan1_output", "w") as f:
-            f.write("6199")
+    exec(gend)
     return 0
 
+gend = conf_read()
+
+# CLI options
+if len(sys.argv) == 1:
+    pass
+else:
+    if "h" in sys.argv[1]:
+        print("You have to put options together (ex. -dc).\n\n-d\t\t\tSet debug flag\n-c\t\t\tSet config file (ex. tem.py -c [configfile])\n-h\t\t\tThis help menu")
+        exit()
+    if "d" in sys.argv[1]:
+        DEBUG = True
+    if "c" in sys.argv[1] and os.getuid() == 0:
+        try:
+            config = sys.argv[2]
+            gend = conf_read(config)
+        except IndexError:
+            print("Error: No config file provided.")
+    elif "c" in sys.argv[1] and os.getuid() != 0:
+        print("Error: Must be root to use config files.")
+
+# Finally, run the script
 if os.getuid() == 0:
     while True:
         root_main()
-        sleep(1)
+        sleep(1.2)
         os.system("clear")
 else:
     while True:
         user_main()
-        sleep(1)
+        sleep(1.2)
         os.system("clear")
