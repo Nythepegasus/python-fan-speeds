@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import glob, re, os, sys, subprocess
 from time import sleep
 from decimal import Decimal
