@@ -2,6 +2,7 @@
 import glob, re, os, sys, subprocess, csv
 from time import sleep
 from decimal import Decimal
+from conf import conf_read, conf_write
 
 # Config Stuffs
 DEBUG = False
@@ -42,24 +43,6 @@ if DEBUG:
     print(f"Current UID: {os.getuid()}\n")
 
 # Function defs
-def conf_read(conf="test.csv"):
-    gend = ""
-    with open(conf, "r") as csv_file:
-        first = csv_file.readline()
-        t, r = first[0], first[1]
-        woowee = f"if temp <= {t}:" + "\n\twith open(f\"{path}fan1_output\", \"w\") as f:\n\t\t" + f"f.write(\"{r}\")"
-        gend += woowee
-        csv_reader = csv.reader(csv_file)
-        for line in csv_reader:
-            t, r = line[0], line[1]
-            woowee = "\n" + f"elif temp <= {t}:" + "\n\twith open(f\"{path}fan1_output\", \"w\") as f:\n\t\t" + f"f.write(\"{r}\")"
-            gend += woowee
-    return gend
-
-def conf_write():
-    """Needs made, but configs can be used right now"""
-    pass
-
 def user_main():
     """All of these things can be ran as any user, because you can read from every file, the tricky bit is being able to write to any file."""
     with open(f"{path}fan1_input", "r") as f:
@@ -108,6 +91,10 @@ else:
     if "h" in sys.argv[1]:
         print("You have to put options together (ex. -dc).\n\n-d\t\t\tSet debug flag\n-c\t\t\tSet config file (ex. tem.py -c [configfile])\n-h\t\t\tThis help menu")
         exit()
+    if "g" in sys.argv[1]:
+        print("Generating config (still being worked on)")
+        conf_write()
+        exit(0)
     if "d" in sys.argv[1]:
         DEBUG = True
     if "c" in sys.argv[1] and os.getuid() == 0:
