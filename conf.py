@@ -4,7 +4,7 @@ def conf_read(conf="default.csv"):
     with open(conf, "r") as csv_file:
         first = csv_file.readline()
         csv_reader = csv.reader(csv_file)
-        gend = "".join([f"if temp <= {first[0]}:" + "\n\twith open(f\"{path}fan1_output\", \"w\") as f:\n\t\t" + f"f.write(\"{first[1]}\")"] + [f"\nelif temp <= {line[0]}:\n\twith open(f\"{{path}}fan1_output\", \"w\") as f:\n\t\tf.write(\"{line[1]}\")" for line in csv_reader])
+        gend = "".join([f"if temp <= {first[0]}:\n\twith open(f\"{{path}}fan1_output\", \"w\") as f:\n\t\tf.write(\"{first[1]}\")"] + [f"\nelif temp <= {line[0]}:\n\twith open(f\"{{path}}fan1_output\", \"w\") as f:\n\t\tf.write(\"{line[1]}\")" for line in csv_reader])
     return gend
 
 def conf_write():
